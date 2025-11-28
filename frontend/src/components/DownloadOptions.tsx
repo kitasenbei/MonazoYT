@@ -14,7 +14,7 @@ interface DownloadOptionsProps {
 }
 
 export function DownloadOptions({ isPlaylist, playlistCount, title, onConfirm, onCancel }: DownloadOptionsProps) {
-  const [maxVideos, setMaxVideos] = useState(Math.min(playlistCount, 50))
+  const [maxVideos, setMaxVideos] = useState(Math.min(playlistCount, 20))
   const [format, setFormat] = useState('mp4')
   const [quality, setQuality] = useState('1080')
 
