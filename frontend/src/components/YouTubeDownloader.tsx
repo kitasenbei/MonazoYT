@@ -495,9 +495,9 @@ export function YouTubeDownloader() {
                       {video.status === 'pending' && editingVideo === video.id && (
                         <div className="pt-2 flex gap-2 items-center">
                           <Select
-                            value={video.format}
+                            value={video.format || 'mp4'}
                             onValueChange={(newFormat) => {
-                              const newQuality = newFormat === 'mp3' ? video.quality : video.quality || '1080'
+                              const newQuality = newFormat === 'mp3' ? (video.quality || '1080') : (video.quality || '1080')
                               updateVideoFormat(video.id, newFormat, newQuality)
                             }}
                           >
@@ -511,7 +511,7 @@ export function YouTubeDownloader() {
                             </SelectContent>
                           </Select>
                           <Select
-                            value={video.quality}
+                            value={video.quality || '1080'}
                             onValueChange={(newQuality) => updateVideoFormat(video.id, video.format || 'mp4', newQuality)}
                             disabled={video.format === 'mp3'}
                           >
