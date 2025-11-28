@@ -69,6 +69,9 @@ jobs:
         port: ${{ secrets.SSH_PORT || 22 }}
         script: |
           cd ${{ secrets.DEPLOY_PATH }}/backend
+          # Recreate symlink to persistent keys
+          rm -f keys.json
+          ln -sf /etc/monazoyt/keys.json keys.json
           # Create .env if it doesn't exist
           if [ ! -f .env ]; then
             echo "PORT=3000" > .env
