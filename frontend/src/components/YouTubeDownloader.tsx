@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Download, Loader2, Plus, Trash2, CheckCircle2, XCircle, List, LogOut, Settings2 } from 'lucide-react'
+import { Download, Loader2, Plus, Trash2, CheckCircle2, XCircle, List, LogOut, Settings2, Search } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DownloadService } from '../../domain/services/downloadService'
@@ -54,6 +54,7 @@ export function YouTubeDownloader() {
   const [detectInfo, setDetectInfo] = useState<DetectResponse | null>(null)
   const [showOptions, setShowOptions] = useState(false)
   const [editingVideo, setEditingVideo] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const videosPerPage = 10
 
   const handleURLPaste = async () => {
@@ -238,11 +239,21 @@ export function YouTubeDownloader() {
     }
   }
 
+  // Search and filter
+  const filteredVideos = videos.filter(video => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    return (
+      video.metadata?.title?.toLowerCase().includes(query) ||
+      video.metadata?.uploader?.toLowerCase().includes(query)
+    )
+  })
+
   // Pagination
-  const totalPages = Math.ceil(videos.length / videosPerPage)
+  const totalPages = Math.ceil(filteredVideos.length / videosPerPage)
   const startIndex = (currentPage - 1) * videosPerPage
   const endIndex = startIndex + videosPerPage
-  const currentVideos = videos.slice(startIndex, endIndex)
+  const currentVideos = filteredVideos.slice(startIndex, endIndex)
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -342,7 +353,29 @@ export function YouTubeDownloader() {
                   </span>
                 )}
               </div>
+
+              {/* Search Bar */}
+              {videos.length > 3 && (
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar por título o canal..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value)
+                      setCurrentPage(1)
+                    }}
+                    className="pl-10 h-10"
+                  />
+                </div>
+              )}
               <div className="space-y-3">
+                {currentVideos.length === 0 && searchQuery && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p className="text-sm">No se encontraron videos con "{searchQuery}"</p>
+                  </div>
+                )}
                 {currentVideos.map((video) => (
                   <div
                     key={video.id}
