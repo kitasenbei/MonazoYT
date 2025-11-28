@@ -64,5 +64,11 @@ jobs:
         port: ${{ secrets.SSH_PORT || 22 }}
         script: |
           cd ${{ secrets.DEPLOY_PATH }}/backend
+          # Create .env if it doesn't exist
+          if [ ! -f .env ]; then
+            echo "PORT=3000" > .env
+            echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
+          fi
+          # Restart PM2
           pm2 restart monazoyt-backend || pm2 start index.js --name monazoyt-backend
           echo "Deployment completed successfully"
