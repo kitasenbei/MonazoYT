@@ -194,7 +194,6 @@ app.post('/metadata', authMiddleware, metadataLimiter, async (req, res) => {
     // Use yt-dlp to get video metadata (handles both single videos and playlists)
     const ytdlp = spawn('yt-dlp', [
       '--dump-json',
-      '--flat-playlist',
       '--playlist-end', validLimit.toString(),
       '--quiet',
       '--no-warnings',
