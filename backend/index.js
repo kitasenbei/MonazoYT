@@ -116,15 +116,24 @@ app.post('/detect', authMiddleware, metadataLimiter, async (req, res) => {
 
     console.log('🔍 Detecting URL type:', url);
 
-    // Use yt-dlp to quickly detect playlist (using -I 0 to get playlist metadata without processing videos)
-    const ytdlp = spawn('yt-dlp', [
+    const detectArgs = [
       '--flat-playlist',
       '--dump-single-json',
       '-I', '0',
       '--quiet',
-      '--no-warnings',
-      url
-    ], {
+      '--no-warnings'
+    ];
+
+    // Add cookies if available
+    const cookiesPath = path.join(__dirname, 'youtube_cookies.txt');
+    if (fs.existsSync(cookiesPath)) {
+      detectArgs.push('--cookies', cookiesPath);
+    }
+
+    detectArgs.push(url);
+
+    // Use yt-dlp to quickly detect playlist (using -I 0 to get playlist metadata without processing videos)
+    const ytdlp = spawn('yt-dlp', detectArgs, {
       timeout: 10000, // 10 second timeout
       windowsHide: true
     });
@@ -191,15 +200,24 @@ app.post('/metadata', authMiddleware, metadataLimiter, async (req, res) => {
 
     console.log('📋 Fetching metadata for:', url);
 
-    // Use yt-dlp to get video metadata (handles both single videos and playlists)
-    const ytdlp = spawn('yt-dlp', [
+    const metadataArgs = [
       '--dump-json',
       '--playlist-end', validLimit.toString(),
       '--quiet',
       '--no-warnings',
-      '--no-check-certificate', // Avoid certificate issues but still secure
-      url
-    ], {
+      '--no-check-certificate' // Avoid certificate issues but still secure
+    ];
+
+    // Add cookies if available
+    const cookiesPath = path.join(__dirname, 'youtube_cookies.txt');
+    if (fs.existsSync(cookiesPath)) {
+      metadataArgs.push('--cookies', cookiesPath);
+    }
+
+    metadataArgs.push(url);
+
+    // Use yt-dlp to get video metadata (handles both single videos and playlists)
+    const ytdlp = spawn('yt-dlp', metadataArgs, {
       timeout: 30000, // 30 second timeout
       windowsHide: true // Hide console window on Windows
     });
@@ -359,6 +377,12 @@ app.post('/download', authMiddleware, downloadLimiter, async (req, res) => {
       ytdlpArgs.push('--merge-output-format', 'mp4');
     } else if (format === 'webm') {
       ytdlpArgs.push('--merge-output-format', 'webm');
+    }
+
+    // Add cookies if available
+    const cookiesPath = path.join(__dirname, 'youtube_cookies.txt');
+    if (fs.existsSync(cookiesPath)) {
+      ytdlpArgs.push('--cookies', cookiesPath);
     }
 
     ytdlpArgs.push(url);
