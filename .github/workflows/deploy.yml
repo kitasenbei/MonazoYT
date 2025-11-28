@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    # Build Frontend
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: npm run build
+      env:
+        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+    # Install Backend Dependencies
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci --production
+
+    # Deploy via SSH
+    - name: Deploy to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        source: "frontend/dist/,backend/"
+        target: ${{ secrets.DEPLOY_PATH }}
+        strip_components: 0
+        rm: false
+
+    - name: Restart services
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT || 22 }}
+        script: |
+          cd ${{ secrets.DEPLOY_PATH }}/backend
+          pm2 restart monazoyt-backend || pm2 start index.js --name monazoyt-backend
+          echo "Deployment completed successfully"
