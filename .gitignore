@@ -1,0 +1,32 @@
+# Keys and sensitive data
+backend/keys.json
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+
+# Downloaded files
+backend/downloads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
