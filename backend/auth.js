@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const KEYS_FILE = path.join(__dirname, 'keys.json');
 
@@ -28,9 +29,12 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ error: 'Authentication required', code: 'NO_KEY' });
   }
 
+  // Hash the incoming key
+  const hashedKey = crypto.createHash('sha256').update(authKey).digest('hex');
+
   const validKeys = loadValidKeys();
 
-  if (!validKeys.includes(authKey)) {
+  if (!validKeys.includes(hashedKey)) {
     return res.status(403).json({ error: 'Invalid authentication key', code: 'INVALID_KEY' });
   }
 
@@ -47,9 +51,12 @@ function verifyKey(req, res) {
     return res.status(400).json({ error: 'Key is required' });
   }
 
+  // Hash the incoming key
+  const hashedKey = crypto.createHash('sha256').update(key).digest('hex');
+
   const validKeys = loadValidKeys();
 
-  if (validKeys.includes(key)) {
+  if (validKeys.includes(hashedKey)) {
     return res.json({ valid: true });
   }
 
