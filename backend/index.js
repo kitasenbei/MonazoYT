@@ -15,6 +15,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DOWNLOADS_DIR = path.join(__dirname, 'downloads');
 
+// Download cooldown tracking
+let downloadCount = 0;
+const COOLDOWN_THRESHOLD = 5; // Downloads before cooldown
+const COOLDOWN_MIN = 60000; // 1 minute in ms
+const COOLDOWN_MAX = 120000; // 2 minutes in ms
+
 // Create downloads directory if it doesn't exist
 if (!fs.existsSync(DOWNLOADS_DIR)) {
   fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
@@ -272,6 +278,25 @@ app.post('/download', authMiddleware, downloadLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Invalid or unsupported video URL' });
     }
 
+    // Check if we need to cooldown
+    if (downloadCount > 0 && downloadCount % COOLDOWN_THRESHOLD === 0) {
+      const cooldownTime = Math.floor(Math.random() * (COOLDOWN_MAX - COOLDOWN_MIN + 1) + COOLDOWN_MIN);
+      const cooldownSeconds = Math.floor(cooldownTime / 1000);
+      console.log(`⏸️  Cooldown: Waiting ${cooldownSeconds}s after ${downloadCount} downloads`);
+
+      // Send cooldown status to client
+      if (downloadId) {
+        activeDownloads.set(downloadId, {
+          progress: 0,
+          speed: '',
+          eta: `Cooldown: ${cooldownSeconds}s`,
+          status: 'cooldown'
+        });
+      }
+
+      await new Promise(resolve => setTimeout(resolve, cooldownTime));
+    }
+
     console.log('⬇ Downloading:', url, `[${format}, ${quality}]`);
 
     // Build format string based on user selection
@@ -426,6 +451,10 @@ app.post('/download', authMiddleware, downloadLimiter, async (req, res) => {
         }
 
         const downloadUrl = `http://localhost:${PORT}/downloads/${encodeURIComponent(filename)}`;
+
+        // Increment download counter for cooldown tracking
+        downloadCount++;
+        console.log(`📊 Download count: ${downloadCount}`);
 
         res.json({
           message: 'Download completed',
