@@ -206,7 +206,8 @@ app.post('/metadata', authMiddleware, metadataLimiter, async (req, res) => {
       '--playlist-end', validLimit.toString(),
       '--quiet',
       '--no-warnings',
-      '--no-check-certificate' // Avoid certificate issues but still secure
+      '--no-check-certificate', // Avoid certificate issues but still secure
+      '--extractor-args', 'youtubetab:skip=authcheck'
     ];
 
     // Add cookies if available
