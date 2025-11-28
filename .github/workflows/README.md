@@ -57,7 +57,7 @@ For production/staging separation:
 
 ## Server Requirements
 
-- Node.js 18+
+- Node.js (any recent version)
 - PM2 installed globally: `npm install -g pm2`
 - yt-dlp installed system-wide
 - SSH access configured
