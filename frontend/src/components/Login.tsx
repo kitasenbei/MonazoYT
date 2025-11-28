@@ -38,7 +38,7 @@ export function Login({ onLogin }: LoginProps) {
       } else {
         setError('Clave inválida')
       }
-    } catch (err) {
+    } catch {
       setError('Error de conexión')
     } finally {
       setLoading(false)

@@ -193,7 +193,7 @@ export function YouTubeDownloader() {
         if (progressData.status === 'completed' || progressData.status === 'failed') {
           clearInterval(progressInterval)
         }
-      } catch (err) {
+      } catch {
         // Progress not available yet, continue polling
       }
     }, 500) // Poll every 500ms
@@ -201,8 +201,8 @@ export function YouTubeDownloader() {
     try {
       const data = await DownloadService.download({
         url: video.url,
-        format: video.format as any,
-        quality: video.quality as any,
+        format: video.format as 'mp4' | 'mp3' | 'webm',
+        quality: video.quality as '2160' | '1440' | '1080' | '720' | '480' | '360',
         downloadId
       })
 
