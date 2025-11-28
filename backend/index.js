@@ -121,7 +121,8 @@ app.post('/detect', authMiddleware, metadataLimiter, async (req, res) => {
       '--dump-single-json',
       '-I', '0',
       '--quiet',
-      '--no-warnings'
+      '--no-warnings',
+      '--extractor-args', 'youtubetab:skip=authcheck'
     ];
 
     // Add cookies if available
