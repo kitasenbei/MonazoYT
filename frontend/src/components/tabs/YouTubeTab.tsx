@@ -63,8 +63,19 @@ export function YouTubeTab() {
     setError('')
 
     try {
+      // Clean YouTube Mix playlists (RD...) from URL
+      let cleanUrl = url.trim()
+      const urlObj = new URL(cleanUrl)
+      const listParam = urlObj.searchParams.get('list')
+      if (listParam?.startsWith('RD')) {
+        urlObj.searchParams.delete('list')
+        urlObj.searchParams.delete('index')
+        cleanUrl = urlObj.toString()
+        setUrl(cleanUrl) // Update the input with clean URL
+      }
+
       // Detect URL type first
-      const detection = await DownloadService.detectURL(url.trim())
+      const detection = await DownloadService.detectURL(cleanUrl)
       setDetectInfo(detection)
       setShowOptions(true)
     } catch (err) {
