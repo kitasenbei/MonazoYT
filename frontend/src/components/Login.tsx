@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Key, Loader2 } from 'lucide-react'
+import { Youtube, Loader2 } from 'lucide-react'
 
 interface LoginProps {
   onLogin: (key: string) => void
@@ -46,11 +46,11 @@ export function Login({ onLogin }: LoginProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-red-50 to-pink-50 dark:from-slate-900 dark:to-slate-800">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-2 text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-            <Key className="h-6 w-6 text-primary" />
+          <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
+            <Youtube className="h-6 w-6 text-red-600" />
           </div>
           <CardTitle className="text-3xl font-bold">
             MonazoYT

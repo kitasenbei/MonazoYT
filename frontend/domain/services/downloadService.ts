@@ -12,7 +12,7 @@ export class DownloadService {
     };
   }
   static async detectURL(url: string): Promise<DetectResponse> {
-    const response = await fetch(`${API_URL}/detect`, {
+    const response = await fetch(`${API_URL}/api/youtube/detect`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ url }),
@@ -27,7 +27,7 @@ export class DownloadService {
   }
 
   static async download(request: DownloadRequest & { downloadId?: string }): Promise<DownloadResponse> {
-    const response = await fetch(`${API_URL}/download`, {
+    const response = await fetch(`${API_URL}/api/youtube/download`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
       body: JSON.stringify(request),
@@ -43,7 +43,7 @@ export class DownloadService {
 
   static async getProgress(downloadId: string): Promise<{ progress: number; speed: string; eta: string; status: string }> {
     const key = AuthService.getKey();
-    const response = await fetch(`${API_URL}/progress/${downloadId}`, {
+    const response = await fetch(`${API_URL}/api/youtube/progress/${downloadId}`, {
       headers: key ? { 'x-auth-key': key } : {},
     });
 
@@ -55,7 +55,7 @@ export class DownloadService {
   }
 
   static async getMetadata(url: string, limit: number = 50): Promise<MetadataResponse> {
-    const response = await fetch(`${API_URL}/metadata`, {
+    const response = await fetch(`${API_URL}/api/youtube/metadata`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ url, limit }),
