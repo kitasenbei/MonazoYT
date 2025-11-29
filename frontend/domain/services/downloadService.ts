@@ -19,8 +19,14 @@ export class DownloadService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to detect URL type');
+      let errorMessage = 'Failed to detect URL type';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || error.details || errorMessage;
+      } catch {
+        errorMessage = `Failed to detect URL: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -34,8 +40,14 @@ export class DownloadService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Download failed');
+      let errorMessage = 'Download failed';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || error.details || errorMessage;
+      } catch {
+        errorMessage = `Download failed: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
@@ -62,8 +74,14 @@ export class DownloadService {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to fetch metadata');
+      let errorMessage = 'Failed to fetch metadata';
+      try {
+        const error = await response.json();
+        errorMessage = error.error || error.details || errorMessage;
+      } catch {
+        errorMessage = `Failed to fetch metadata: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
 
     return response.json();
